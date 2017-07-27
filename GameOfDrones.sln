@@ -1,0 +1,54 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.26228.9
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{00D1A9C2-B5F0-4AF3-8072-F6C62B433612}") = "GameOfDrones.Database", "GameOfDrones.Database\GameOfDrones.Database.sqlproj", "{2DFD568B-84EB-42E3-BF86-72291CB0D84D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameOfDrones.Site", "GameOfDrones.Site\GameOfDrones.Site.csproj", "{C9DCF96C-6C50-4528-A107-18ADEEBFD143}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameOfDrones.Entity", "GameOfDrones.Entity\GameOfDrones.Entity.csproj", "{3D145DF6-3D46-41FA-B7E6-3981585D7369}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Database", "Database", "{3EFF6C1C-BB6E-4290-8779-6363DEE0D534}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Models", "Models", "{35E1058E-643C-4876-804F-7B8954B5B17E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Web", "Web", "{416A411B-B6BA-4BD5-86F0-2EB05DC85222}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameOfDrones.WebApi", "GameOfDrones.WebApi\GameOfDrones.WebApi.csproj", "{E5F2CE4E-EF97-463B-8134-4B279C762A07}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2DFD568B-84EB-42E3-BF86-72291CB0D84D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2DFD568B-84EB-42E3-BF86-72291CB0D84D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2DFD568B-84EB-42E3-BF86-72291CB0D84D}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{2DFD568B-84EB-42E3-BF86-72291CB0D84D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2DFD568B-84EB-42E3-BF86-72291CB0D84D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2DFD568B-84EB-42E3-BF86-72291CB0D84D}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{C9DCF96C-6C50-4528-A107-18ADEEBFD143}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C9DCF96C-6C50-4528-A107-18ADEEBFD143}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C9DCF96C-6C50-4528-A107-18ADEEBFD143}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C9DCF96C-6C50-4528-A107-18ADEEBFD143}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3D145DF6-3D46-41FA-B7E6-3981585D7369}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3D145DF6-3D46-41FA-B7E6-3981585D7369}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3D145DF6-3D46-41FA-B7E6-3981585D7369}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3D145DF6-3D46-41FA-B7E6-3981585D7369}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E5F2CE4E-EF97-463B-8134-4B279C762A07}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E5F2CE4E-EF97-463B-8134-4B279C762A07}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E5F2CE4E-EF97-463B-8134-4B279C762A07}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E5F2CE4E-EF97-463B-8134-4B279C762A07}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{2DFD568B-84EB-42E3-BF86-72291CB0D84D} = {3EFF6C1C-BB6E-4290-8779-6363DEE0D534}
+		{C9DCF96C-6C50-4528-A107-18ADEEBFD143} = {416A411B-B6BA-4BD5-86F0-2EB05DC85222}
+		{3D145DF6-3D46-41FA-B7E6-3981585D7369} = {35E1058E-643C-4876-804F-7B8954B5B17E}
+		{E5F2CE4E-EF97-463B-8134-4B279C762A07} = {416A411B-B6BA-4BD5-86F0-2EB05DC85222}
+	EndGlobalSection
+EndGlobal
