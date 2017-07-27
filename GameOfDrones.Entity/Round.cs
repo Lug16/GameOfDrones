@@ -10,13 +10,22 @@ namespace GameOfDrones.Entity
     public partial class Round
     {
         [Key]
-        public int IdRound { get; set; }
-
+        [Column(Order = 0)]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int IdPlayer { get; set; }
 
+        [Key]
+        [Column(Order = 1)]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int IdGame { get; set; }
 
-        public int Score { get; set; }
+        public int HandShape { get; set; }
+
+        public bool Won { get; set; }
+
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+        [Column(TypeName = "datetime2")]
+        public DateTime CreationDate { get; set; }
 
         public virtual Game Game { get; set; }
 

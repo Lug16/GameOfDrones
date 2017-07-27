@@ -61,6 +61,7 @@
         span.text('Name:');
 
         var text = $('<input type="text">');
+        text.attr('placeholder','Player ' + number)
         $.data(text[0], 'info', number);
 
         var button = $('<input type="button">');
@@ -77,12 +78,17 @@
 
     var playerOkClicked = function () {
         var text = $(this).siblings('input')[0];
-        var playerInfo = {
-            id: 0,
-            name: text.value,
-            score: 0
-        };
         var currentPlayer = $.data(text, 'info');
+
+        if (text) {
+            text.value = 'Player_' + currentPlayer;
+        }
+
+        var playerInfo = {
+            Id: 0,
+            Name: text.value,
+            Score: 0
+        };
 
         playersInfo.push(playerInfo);
 
@@ -132,8 +138,8 @@
     }
 
     function onPlayersSaved(e,info) {
-        console.info('El jugador ha sido guardado');
-        console.info(info);
+        playersInfo = info.resultset;
+        console.info(playersInfo);
     }
 
     $.getScript("Scripts/app/config.js")
@@ -150,7 +156,7 @@ var SignContainer = function (container, playersInfo) {
 
     function loadGame() {
         var h3 = $('<h3>');
-        h3.text('Hey!! ' + playersInfo[0].name + ' is your turn');
+        h3.text(playersInfo[0].name + "'s turn");
         h3.addClass('gamerTitle');
 
         container.append(h3);
@@ -198,11 +204,10 @@ var ApiController = function (url) {
         $.ajax({
             type: "POST",
             data: JSON.stringify(data),
-            url: url + "/players",
+            url: url + "/game",
             contentType: "application/json"
         }).done(function (resultset) {
-            console.info(resultset);
-            $(self).trigger(e, resultset);
+            $(self).trigger(e, { resultset: resultset });
         });
     }
 

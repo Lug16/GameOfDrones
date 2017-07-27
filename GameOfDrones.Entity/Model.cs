@@ -21,8 +21,13 @@ namespace GameOfDrones.Entity
             modelBuilder.Entity<Game>()
                 .HasMany(e => e.Rounds)
                 .WithRequired(e => e.Game)
-                .HasForeignKey(e => e.IdPlayer)
+                .HasForeignKey(e => e.IdGame)
                 .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<Player>()
+                .HasMany(e => e.Games)
+                .WithOptional(e => e.Player)
+                .HasForeignKey(e => e.IdWinner);
 
             modelBuilder.Entity<Player>()
                 .HasMany(e => e.Rounds)
