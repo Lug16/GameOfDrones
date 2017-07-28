@@ -6,13 +6,14 @@ using System.Web;
 
 namespace GameOfDrones.WebApi.Models
 {
-    public class Player
+    public class Request
     {
-        public int Id { get; set; } 
-        
-        [Required]
+        public int Id { get; set; }
+
         public string Name { get; set; }
 
-        public int Score { get; set; }
+        public int Handshape { get; set; }
+
+        public int? IdWinner { get; set; }
     }
 }

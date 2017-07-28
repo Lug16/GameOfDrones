@@ -10,13 +10,10 @@ namespace GameOfDrones.Entity
     public partial class Round
     {
         [Key]
-        [Column(Order = 0)]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        public int IdRound { get; set; }
+
         public int IdPlayer { get; set; }
 
-        [Key]
-        [Column(Order = 1)]
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         public int IdGame { get; set; }
 
         public int HandShape { get; set; }

@@ -17,11 +17,11 @@ namespace GameOfDrones.WebApi.Controllers
     {
         private Model db = new Model();
 
-        public async Task<IHttpActionResult> PostGame([FromBody]Models.Player[] players)
+        public async Task<IHttpActionResult> PostGame([FromBody]Models.Request[] request)
         {
-            if (!players.Any())
+            if (!request.Any())
             {
-                return BadRequest("No players to save");
+                return BadRequest("No Data within the request");
             }
             if (!ModelState.IsValid)
             {
@@ -31,7 +31,7 @@ namespace GameOfDrones.WebApi.Controllers
             var game = new Game();
             var dbPlayers = new List<Player>();
 
-            foreach (var player in players)
+            foreach (var player in request)
             {
                 var round = new Round();
 
@@ -56,7 +56,7 @@ namespace GameOfDrones.WebApi.Controllers
             db.Games.Add(game);
             await db.SaveChangesAsync();
 
-            var t = dbPlayers.Select(r => new Models.Player { Id = r.IdPlayer, Name = r.Name }).ToArray();
+            var t = dbPlayers.Select(r => new Models.Request { Id = r.IdPlayer, Name = r.Name }).ToArray();
 
             return Ok(t);
         }

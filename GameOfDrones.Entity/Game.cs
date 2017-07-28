@@ -24,6 +24,7 @@ namespace GameOfDrones.Entity
         [Column(TypeName = "datetime2")]
         public DateTime StartDate { get; set; }
 
+        [Column(TypeName = "datetime2")]
         public DateTime? EndDate { get; set; }
 
         public virtual Player Player { get; set; }

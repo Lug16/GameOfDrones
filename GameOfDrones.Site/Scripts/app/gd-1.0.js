@@ -17,7 +17,6 @@
         config = gdSetup.config;
         apiController = ApiController(config.apiUrl);
         console.info(appName + '-Config file loaded');
-        $(global).on('playersSaved', onPlayersSaved)
     }
 
     var scriptDownloadedFailed = function (jqxhr, settings, exception) {
@@ -29,11 +28,15 @@
 
         container = $('#gd-container');
 
+        $(global).on('playersSaved', onPlayersSaved);
+        $(global).on('signSelected', onSignSelected);
+        $(global).on('scoreUpdated', onScoreUpdated);
+
         setTimeout(function () {
             if (config) {
                 startGame();
             } else {
-                console.error(appName + '- Time out of ' + loadConfigTimeOut + 'ms reached for loading config file, the game wont start');
+                console.error(appName + '- Time out of ' + loadConfigTimeOut + "ms reached for loading config file, the game won't start");
             }
         }, loadConfigTimeOut);
     }
@@ -61,7 +64,7 @@
         span.text('Name:');
 
         var text = $('<input type="text">');
-        text.attr('placeholder','Player ' + number)
+        text.attr('placeholder', 'Player ' + number)
         $.data(text[0], 'info', number);
 
         var button = $('<input type="button">');
@@ -87,6 +90,7 @@
         var playerInfo = {
             Id: 0,
             Name: text.value,
+            Handshape: 0,
             Score: 0
         };
 
@@ -137,9 +141,19 @@
         sign.start();
     }
 
-    function onPlayersSaved(e,info) {
+    function onPlayersSaved(e, info) {
         playersInfo = info.resultset;
-        console.info(playersInfo);
+    }
+
+    function onSignSelected(e, info) {
+        var playerInfo = $.grep(playersInfo, function (e) { return e.Name == info.currentplayer.Name; })[0];
+        playerInfo.Handshape = info.selection.id;
+        apiController.updateRound(playerInfo);
+    }
+
+    function onScoreUpdated(e, info)
+    {
+        console.info(info);
     }
 
     $.getScript("Scripts/app/config.js")
@@ -153,10 +167,15 @@
 
 var SignContainer = function (container, playersInfo) {
     var signs = ['paper', 'rock', 'scissors'];
+    var currentPlayer = 0;
+    var e = $.Event('signSelected');
+    var self = this;
 
     function loadGame() {
+        container.empty();
+        container.show('fast');
         var h3 = $('<h3>');
-        h3.text(playersInfo[0].name + "'s turn");
+        h3.text(playersInfo[currentPlayer].Name + "'s turn");
         h3.addClass('gamerTitle');
 
         container.append(h3);
@@ -170,7 +189,7 @@ var SignContainer = function (container, playersInfo) {
         for (var i = 0; i < signs.length; i++) {
             var div = $('<div>');
             div.addClass('sign');
-            $.data(div[0], 'info', signs[i]);
+            $.data(div[0], 'info', { id: i + 1, sign: signs[i] });
 
             var img = $('<img style="width:200px">');
             img.addClass('img-responsive');
@@ -186,7 +205,11 @@ var SignContainer = function (container, playersInfo) {
     }
 
     function onSignClicked() {
-        //console.info($.data(this, 'info'));
+        $(self).trigger(e, { currentplayer: playersInfo[currentPlayer], selection: $.data(this, 'info') });
+        currentPlayer++;
+        if (currentPlayer >= playersInfo.length)
+            currentPlayer = 0;
+        container.hide('slow', loadGame);
     }
 
     return {
@@ -211,7 +234,19 @@ var ApiController = function (url) {
         });
     }
 
+    function updateRound(data) {
+        $.ajax({
+            type: "POST",
+            data: JSON.stringify(data),
+            url: url + "/round",
+            contentType: "application/json"
+        }).done(function (resultset) {
+            $(self).trigger(f, { resultset: resultset });
+        });
+    }
+
     return {
-        savePlayers: savePlayers
+        savePlayers: savePlayers,
+        updateRound: updateRound
     }
 };
