@@ -12,6 +12,8 @@
     var appName = 'Games of Drones';
     var startGameWait = 3;//Seconds
     var apiController = null;
+    var signContainer = null;
+    var currentPlayer = null;
 
     var scriptDownloaded = function () {
         config = gdSetup.config;
@@ -43,6 +45,7 @@
 
     function startGame() {
         container.empty();
+        playersInfo = [];
 
         if (isNewGame) {
             for (var i = 0; i < config.players; i++) {
@@ -81,34 +84,33 @@
 
     var playerOkClicked = function () {
         var text = $(this).siblings('input')[0];
-        var currentPlayer = $.data(text, 'info');
+        var playerindex = $.data(text, 'info');
 
-        if (text) {
-            text.value = 'Player_' + currentPlayer;
+        if (!text.value) {
+            text.value = 'Player_' + playerindex;
         }
 
         var playerInfo = {
             Id: 0,
             Name: text.value,
             Handshape: 0,
-            Score: 0
+            Turn: 0
         };
 
         playersInfo.push(playerInfo);
 
-        if (currentPlayer < config.players) {
-            $('#gd-prompt-player' + currentPlayer).hide('fast');
-            $('#gd-prompt-player' + (currentPlayer + 1)).show('fast');
+        if (playerindex < config.players) {
+            $('#gd-prompt-player' + playerindex).hide('fast');
+            $('#gd-prompt-player' + (playerindex + 1)).show('fast');
         } else {
-            $('#gd-prompt-player' + currentPlayer).hide('fast');
+            $('#gd-prompt-player' + playerindex).hide('fast');
             apiController.savePlayers(playersInfo);
+            container.empty();
             container.append(countDownSection());
         }
     }
 
     var countDownSection = function () {
-        container.empty();
-
         var div = $('<div>');
 
         var h3 = $('<h3>');
@@ -136,9 +138,9 @@
 
     var loadGame = function () {
         container.empty();
-
-        var sign = SignContainer(container, playersInfo);
-        sign.start();
+        currentPlayer = 0;
+        signContainer = SignContainer(container, playersInfo);
+        signContainer.loadGame(currentPlayer);
     }
 
     function onPlayersSaved(e, info) {
@@ -146,14 +148,45 @@
     }
 
     function onSignSelected(e, info) {
-        var playerInfo = $.grep(playersInfo, function (e) { return e.Name == info.currentplayer.Name; })[0];
+        var playerInfo = $.grep(playersInfo, function (e, i) { return e.Name == info.currentplayer.Name })[0];
         playerInfo.Handshape = info.selection.id;
+        playerInfo.Turn = info.turn;
         apiController.updateRound(playerInfo);
     }
 
-    function onScoreUpdated(e, info)
-    {
-        console.info(info);
+    function onScoreUpdated(e, info) {
+        if (info.resultset.IdWinner) {
+            var winner = $.grep(playersInfo, function (e, i) { return e.Id == info.resultset.IdWinner })[0];
+            container.empty();
+            container.append(getWinnerPrompt(winner.Name));
+        } else {
+            currentPlayer++;
+
+            if (currentPlayer >= playersInfo.length) {
+                container.hide('slow', loadGame);
+                currentPlayer = 0;
+            } else {
+                container.hide('slow');
+                signContainer.loadGame(currentPlayer);
+            }
+        }
+    }
+
+    function getWinnerPrompt(name) {
+        var div = $('<div>');
+
+        var p = $('<p>');
+        p.attr('id', 'winner');
+        p.text(name + ' is the winner');
+
+        var button = $('<input type="button">');
+        button.val('Play Again');
+        button.on('click', startGame);
+
+        div.append(p);
+        div.append(button);
+
+        return div;
     }
 
     $.getScript("Scripts/app/config.js")
@@ -167,15 +200,16 @@
 
 var SignContainer = function (container, playersInfo) {
     var signs = ['paper', 'rock', 'scissors'];
-    var currentPlayer = 0;
     var e = $.Event('signSelected');
     var self = this;
+    var pindex = 0;
 
-    function loadGame() {
+    function loadGame(playerIndex) {
+        pindex = playerIndex;
         container.empty();
         container.show('fast');
         var h3 = $('<h3>');
-        h3.text(playersInfo[currentPlayer].Name + "'s turn");
+        h3.text(playersInfo[playerIndex].Name + "'s turn");
         h3.addClass('gamerTitle');
 
         container.append(h3);
@@ -205,15 +239,11 @@ var SignContainer = function (container, playersInfo) {
     }
 
     function onSignClicked() {
-        $(self).trigger(e, { currentplayer: playersInfo[currentPlayer], selection: $.data(this, 'info') });
-        currentPlayer++;
-        if (currentPlayer >= playersInfo.length)
-            currentPlayer = 0;
-        container.hide('slow', loadGame);
+        $(self).trigger(e, { currentplayer: playersInfo[pindex], selection: $.data(this, 'info'), turn: pindex });
     }
 
     return {
-        start: loadGame
+        loadGame: loadGame
     }
 }
 

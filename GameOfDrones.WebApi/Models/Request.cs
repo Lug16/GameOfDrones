@@ -14,6 +14,8 @@ namespace GameOfDrones.WebApi.Models
 
         public int Handshape { get; set; }
 
+        public int Turn { get; set; }
+
         public int? IdWinner { get; set; }
     }
 }

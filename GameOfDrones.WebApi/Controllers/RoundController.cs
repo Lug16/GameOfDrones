@@ -28,18 +28,15 @@ namespace GameOfDrones.WebApi.Controllers
             {
                 var player = db.Players.Find(request.Id);
                 var activeRound = player.Rounds.Last();
+                var round = new Round { IdGame = activeRound.IdGame, HandShape = request.Handshape };
 
-                var currentGameRounds = db.Rounds.Where(
-                    r => r.HandShape > 0 &&
-                    r.IdGame == activeRound.IdGame &&
-                    r.IdPlayer != request.Id &&
-                    r.IdRound < activeRound.IdRound);
-
-                if (currentGameRounds.Any())
+                if (request.Turn == 0)
                 {
-                    var lastPlayerRound = currentGameRounds.OrderByDescending(r => r.CreationDate).First();
-
-                    var round = new Round { IdGame = activeRound.IdGame, HandShape = request.Handshape };
+                    player.Rounds.Add(round);
+                }
+                else
+                {
+                    var lastPlayerRound = db.Rounds.Where(r => r.IdGame == activeRound.IdGame).OrderByDescending(r=>r.CreationDate).First();
                     var handshape = (HandShapeTypes)request.Handshape;
                     var lastPlayerHandshape = (HandShapeTypes)lastPlayerRound.HandShape;
                     var won = false;
@@ -69,8 +66,9 @@ namespace GameOfDrones.WebApi.Controllers
 
                         var victories = db.Games.Find(activeRound.IdGame).Rounds.Where(r => r.IdPlayer == activeRound.IdPlayer && r.Won).Count();
                         round.Won = true;
+                        victories++;
 
-                        if (victories > 3)
+                        if (victories > 2)
                         {
                             request.IdWinner = activeRound.IdPlayer;
                         }
@@ -81,6 +79,7 @@ namespace GameOfDrones.WebApi.Controllers
 
                         var victories = db.Games.Find(lastPlayerRound.IdGame).Rounds.Where(r => r.IdPlayer == lastPlayerRound.IdPlayer && r.Won).Count();
                         lastPlayerRound.Won = true;
+                        victories++;
 
                         if (victories > 2)
                         {
@@ -90,15 +89,10 @@ namespace GameOfDrones.WebApi.Controllers
 
                     activeRound.HandShape = request.Handshape;
                 }
-                else
-                {
-                    player.Rounds.Add(new Round { IdGame = activeRound.IdGame, HandShape = request.Handshape });
-                }
-
 
                 db.SaveChanges();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 throw;
             }

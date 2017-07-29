@@ -55,3 +55,46 @@ input[type=button] {
 .signContainer{
     text-align:center;
 }
+
+#winner {
+    animation: 3s multicolor;
+    -webkit-animation: 3s multicolor;
+    font-size:50px;
+    text-align:center;
+}
+
+@keyframes multicolor {
+    0% {
+        color: #000;
+    }
+
+    33% {
+        color: #FF0000;
+    }
+
+    66% {
+        color: #0000FF;
+    }
+
+    100% {
+        color: #FFF;
+    }
+}
+
+@-webkit-keyframes multicolor {
+    0% {
+        color: #000;
+    }
+
+    33% {
+        color: #FF0000;
+    }
+
+    66% {
+        color: #0000FF;
+    }
+
+    100% {
+        color: #FFF;
+    }
+}
