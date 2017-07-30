@@ -11,6 +11,7 @@ This solution contains four projects
 ## Setup
 ### Deploy Database Project
 This will create the database and the user of the application
+
 **GameOfDrones** is the default name of the database
 ### Deploy the Sites
 If you're using your localhost as server
