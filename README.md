@@ -5,7 +5,7 @@
 This solution contains four projects
 1. Database project *[GameOfDrones.Database]* : Contains the db structure
 2. Models *[GameOfDrones.Entity]* : Contains classes and some common logic
-3. Web Site *[GameOfDrones.Site]* : Contains the client's logic of the game
+3. Web Site *[GameOfDrones.Site]* : Contains the client's logic for the game
 4. Web Api *[GameOfDrones.WebApi]* : Contains the API for handling the game's logic
 
 ## Setup
