@@ -12,10 +12,12 @@ This solution contains four projects
 ### Deploy Database Project
 This will create the database and the user of the application
 **GameOfDrones** is the default name of the database
-## Deploy the Sites
+### Deploy the Sites
 If you're using your localhost as server
 1. WebApi as **http://localhost/gameofdrones/api** *(default*)*
 2. Web Site as **http://localhost/gameofdrones.site/** *(default*)*
+### Run the site
+Play it :)
 ## Hints*
 If you change the WebApi's address, you'll need to change the following file:
 - [x] GameOfDrones.Site/Scripts/app/config.js the field **apiUrl**
