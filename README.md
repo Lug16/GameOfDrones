@@ -17,7 +17,7 @@ If you're using your localhost as server
 1. WebApi as **http://localhost/gameofdrones/api** *(default*)*
 2. Web Site as **http://localhost/gameofdrones.site/** *(default*)*
 ## Hints*
-If you change the addres of the WebApi, you'll need to change the following file:
-+ GameOfDrones.Site/Scripts/app/config.js the field **apiUrl**
+If you change the WebApi's address, you'll need to change the following file:
++ GameOfDrones.Site/Scripts/app/config.js the field **apiUrl** +
 If you change the name of the database, you'll need to change the following file:
-+ GameOfDrones.WebApi/Web.config the node **connectionStrings** 
++ GameOfDrones.WebApi/Web.config the node **connectionStrings** +
