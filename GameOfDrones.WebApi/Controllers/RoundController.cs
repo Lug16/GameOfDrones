@@ -1,23 +1,22 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.Entity;
-using System.Data.Entity.Infrastructure;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
 using System.Web.Http;
-using System.Web.Http.Description;
 using GameOfDrones.Entity;
+using GameOfDrones.Entity.Extensions;
+using GameOfDrones.WebApi.Kernel;
+using GameOfDrones.WebApi.Kernel.Models;
+using GameOfDrones.WebApi.Persistence;
 
 namespace GameOfDrones.WebApi.Controllers
 {
     public class RoundController : ApiController
     {
-        private Model db = new Model();
+        private readonly IUnitOfWork _unitOfWork;
+        public RoundController(IUnitOfWork unitOfWork)
+        {
+            _unitOfWork = unitOfWork;
+        }
 
-        public async Task<IHttpActionResult> PostRound([FromBody]Models.Request request)
+        public IHttpActionResult PostRound([FromBody]Request request)
         {
             if (!ModelState.IsValid)
             {
@@ -26,71 +25,57 @@ namespace GameOfDrones.WebApi.Controllers
 
             try
             {
-                var player = db.Players.Find(request.Id);
-                var activeRound = player.Rounds.Last();
-                var round = new Round { IdGame = activeRound.IdGame, HandShape = request.Handshape };
+                var player = _unitOfWork.Players.GetPlayerById(request.Id);
+                var activeRound = _unitOfWork.Rounds.GetLastByPlayer(request.Id);
+                var game = _unitOfWork.Games.GetGameById(activeRound.IdGame);
+
+                var round = new Round { IdPlayer = player.IdPlayer, IdGame = activeRound.IdGame, HandShape = request.Handshape };
 
                 if (request.Turn == 0)
                 {
-                    player.Rounds.Add(round);
+                    _unitOfWork.Rounds.Insert(round);
                 }
                 else
                 {
-                    var lastPlayerRound = db.Rounds.Where(r => r.IdGame == activeRound.IdGame).OrderByDescending(r=>r.CreationDate).First();
+                    var lastPlayerRound = _unitOfWork.Rounds.GetPreviousRound(activeRound.IdGame);
+                    var lastPlayer = _unitOfWork.Players.GetPlayerById(lastPlayerRound.IdPlayer);
+
                     var handshape = (HandShapeTypes)request.Handshape;
                     var lastPlayerHandshape = (HandShapeTypes)lastPlayerRound.HandShape;
-                    var won = false;
-                    var loose = false;
 
-                    switch (handshape)
+                    var gameResult = handshape.GetResult(lastPlayerHandshape);
+
+                    if (gameResult.Item1)//Won
                     {
-                        case HandShapeTypes.Paper:
-                            won = lastPlayerHandshape == HandShapeTypes.Rock;
-                            loose = lastPlayerHandshape == HandShapeTypes.Scissors;
-                            break;
-                        case HandShapeTypes.Rock:
-                            won = lastPlayerHandshape == HandShapeTypes.Scissors;
-                            loose = lastPlayerHandshape == HandShapeTypes.Paper;
-                            break;
-                        case HandShapeTypes.Scissors:
-                            won = lastPlayerHandshape == HandShapeTypes.Paper;
-                            loose = lastPlayerHandshape == HandShapeTypes.Rock;
-                            break;
-                        default:
-                            break;
-                    }
-
-                    if (won)
-                    {
-                        player.Rounds.Add(round);
-
-                        var victories = db.Games.Find(activeRound.IdGame).Rounds.Where(r => r.IdPlayer == activeRound.IdPlayer && r.Won).Count();
                         round.Won = true;
-                        victories++;
+                        _unitOfWork.Rounds.Insert(round);
 
-                        if (victories > 2)
+                        if (IsWinner(game.IdGame, player.IdPlayer))
                         {
                             request.IdWinner = activeRound.IdPlayer;
+                            game.IdWinner = activeRound.IdPlayer;
+                            player.SetAsWinner();
+                            lastPlayer.GamesPlayed = lastPlayer.GamesPlayed.HasValue ? ++lastPlayer.GamesPlayed : 1;
                         }
                     }
-                    else if (loose)
+                    else if (gameResult.Item2)//Lose
                     {
-                        player.Rounds.Add(round);
-
-                        var victories = db.Games.Find(lastPlayerRound.IdGame).Rounds.Where(r => r.IdPlayer == lastPlayerRound.IdPlayer && r.Won).Count();
                         lastPlayerRound.Won = true;
-                        victories++;
+                        _unitOfWork.Rounds.Insert(round);
 
-                        if (victories > 2)
+                        if (IsWinner(game.IdGame, lastPlayer.IdPlayer))
                         {
                             request.IdWinner = lastPlayerRound.IdPlayer;
+                            game.IdWinner = lastPlayerRound.IdPlayer;
+                            lastPlayer.SetAsWinner();
+                            player.GamesPlayed = player.GamesPlayed.HasValue ? ++player.GamesPlayed : 1;
                         }
                     }
 
                     activeRound.HandShape = request.Handshape;
                 }
 
-                db.SaveChanges();
+                _unitOfWork.Complete();
             }
             catch (Exception)
             {
@@ -100,5 +85,11 @@ namespace GameOfDrones.WebApi.Controllers
             return Ok(request);
         }
 
+        private bool IsWinner(int idGame, int idPlayer)
+        {
+            var victories = _unitOfWork.Games.GetNumberOfVictoriesByPlayer(idGame, idPlayer);
+
+            return victories > 2;
+        }
     }
 }

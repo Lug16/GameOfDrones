@@ -8,7 +8,8 @@ namespace GameOfDrones.Entity
 {
     public enum HandShapeTypes
     {
-        Paper = 1,
+        None,
+        Paper,
         Rock,
         Scissors
     }

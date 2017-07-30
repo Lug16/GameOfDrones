@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
 
-namespace GameOfDrones.WebApi.Models
+namespace GameOfDrones.WebApi.Kernel.Models
 {
     public class Request
     {

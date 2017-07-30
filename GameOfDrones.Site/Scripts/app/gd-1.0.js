@@ -257,7 +257,7 @@ var ApiController = function (url) {
         $.ajax({
             type: "POST",
             data: JSON.stringify(data),
-            url: url + "/game",
+            url: url + "/player",
             contentType: "application/json"
         }).done(function (resultset) {
             $(self).trigger(e, { resultset: resultset });
