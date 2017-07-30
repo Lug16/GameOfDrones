@@ -11,4 +11,4 @@ This solution contains three 4 projects
 ## Setup
 ### Deploy Database Project
 **GameOfDrones** is the default name of the database
-![alt text](https://www.dropbox.com/s/xh7q8nlpq6tsbj7/1.png?dl=0 "How to 1")
+![alt text](https://photos-5.dropbox.com/t/2/AADiXEay_XkbnvuXdndHlICtYmSr46iNKqiiwcHgqla54A/12/15421852/png/32x32/1/_/1/2/1.png/EKaPvgsYlqAEIAcoBw/morpD9-Yyboh8erJ9rhNCr-i6iTkgsn04l14OguKJkE?size=800x600&size_mode=3 "How to 1")
