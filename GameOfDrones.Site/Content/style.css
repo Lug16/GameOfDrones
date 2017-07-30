@@ -98,3 +98,7 @@ input[type=button] {
         color: #FFF;
     }
 }
+
+.modal-header {
+    background-color: rgb(254,229,12);
+}

@@ -19,7 +19,13 @@ namespace GameOfDrones.WebApi.Controllers
             _unitOfWork = unitOfWork;
         }
 
-        public IHttpActionResult PostGame([FromBody]Request[] request)
+        public IHttpActionResult GetPlayer()
+        {
+            var response = _unitOfWork.Players.GetLeaderboard();
+            return Ok(response.Select(r=>new { Name = r.Name, Victories = r.Victories, GamesPlayed = r.GamesPlayed }));
+        }
+
+        public IHttpActionResult PostPlayers([FromBody]Request[] request)
         {
             if (!request.Any())
             {
@@ -67,7 +73,6 @@ namespace GameOfDrones.WebApi.Controllers
             {
                 throw;
             }
-
         }
     }
 }

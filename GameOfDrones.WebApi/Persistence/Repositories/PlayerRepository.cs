@@ -25,6 +25,11 @@ namespace GameOfDrones.WebApi.Persistence.Repositories
             _context.Players.Add(player);
         }
 
+        public IEnumerable<Player> GetLeaderboard()
+        {
+            return _context.Players.Where(r => r.Victories.HasValue).OrderByDescending(r => r.Victories).OrderBy(r => r.CreationDate).ToArray();
+        }
+
         public PlayerRepository(Model context)
         {
             _context = context;

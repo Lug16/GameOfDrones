@@ -18,6 +18,7 @@
     var scriptDownloaded = function () {
         config = gdSetup.config;
         apiController = ApiController(config.apiUrl);
+        apiController.getHistoryBoard();
         console.info(appName + '-Config file loaded');
     }
 
@@ -33,6 +34,7 @@
         $(global).on('playersSaved', onPlayersSaved);
         $(global).on('signSelected', onSignSelected);
         $(global).on('scoreUpdated', onScoreUpdated);
+        $(global).on('leaderboardUpdated', onleaderboardUpdated);
 
         setTimeout(function () {
             if (config) {
@@ -157,6 +159,7 @@
     function onScoreUpdated(e, info) {
         if (info.resultset.IdWinner) {
             var winner = $.grep(playersInfo, function (e, i) { return e.Id == info.resultset.IdWinner })[0];
+            apiController.getHistoryBoard();
             container.empty();
             container.append(getWinnerPrompt(winner.Name));
         } else {
@@ -187,6 +190,78 @@
         div.append(button);
 
         return div;
+    }
+
+    function onleaderboardUpdated(e, data)
+    {
+        if (data.resultset.length > 0) {
+            container.nextAll().remove();
+
+            var title = 'Leaderboard'
+            var link = $('<div style="text-align:center"><a href="#" data-toggle="modal" data-target="#myModal">Leaderboard</a></div>')
+
+            var content = $('<table class="table">');
+            var trHead = $('<thead>');
+            var tr = $('<tr>');
+            var tdNames = $('<th>')
+            tdNames.text('Names');
+            var tdGamesPlayed = $('<th>')
+            tdGamesPlayed.text('Games Played');
+            var tdVictories = $('<th>')
+            tdVictories.text('Victories');
+
+            tr.append(tdNames);
+            tr.append(tdGamesPlayed);
+            tr.append(tdVictories);
+
+            trHead.append(tr);
+
+            content.append(trHead);
+
+            for (var i = 0; i < data.resultset.length; i++) {
+                tr = $('<tr>');
+                tdNames = $('<td>');
+                tdNames.text(data.resultset[i].Name);
+                tdGamesPlayed = $('<td>');
+                tdGamesPlayed.text(data.resultset[i].GamesPlayed);
+                tdVictories = $('<td>');
+                tdVictories.text(data.resultset[i].Victories);
+
+                tr.append(tdNames);
+                tr.append(tdGamesPlayed);
+                tr.append(tdVictories);
+
+                content.append(tr);
+            }
+            var mainModal = getModal(title, content);
+
+            container.after(mainModal);
+            container.after(link);
+        }
+    }
+
+    function getModal(title, content)
+    {
+        var mainModal = $('<div id="myModal" class="modal fade" role="dialog">');
+        var modalDialog = $('<div class="modal-dialog">');
+        var modalContent = $('<div class="modal-content">');
+        var modalHeader = $('<div class="modal-header">');
+        var btnCloser = $('<button type="button" class="close" data-dismiss="modal">&times;</button>');
+        var h4Title = $('<h4 class="modal-title">' + title + '</h4>');
+        var modalBody = $('<div class="modal-body">');
+
+        modalBody.append(content);
+        modalHeader.append(btnCloser);
+        modalHeader.append(h4Title);
+
+        modalContent.append(modalHeader);
+        modalContent.append(modalBody);
+
+        modalDialog.append(modalContent);
+
+        mainModal.append(modalDialog);
+
+        return mainModal;
     }
 
     $.getScript("Scripts/app/config.js")
@@ -248,8 +323,9 @@ var SignContainer = function (container, playersInfo) {
 }
 
 var ApiController = function (url) {
-    var e = jQuery.Event("playersSaved");
-    var f = jQuery.Event("scoreUpdated");
+    var e = $.Event("playersSaved");
+    var f = $.Event("scoreUpdated");
+    var g = $.Event("leaderboardUpdated")
 
     var self = this;
 
@@ -275,8 +351,18 @@ var ApiController = function (url) {
         });
     }
 
+    function getHistoryBoard() {
+        $.ajax({
+            type: "GET",
+            url: url + "/player",
+        }).done(function (resultset) {
+            $(self).trigger(g, { resultset: resultset });
+        });
+    }
+
     return {
         savePlayers: savePlayers,
-        updateRound: updateRound
+        updateRound: updateRound,
+        getHistoryBoard: getHistoryBoard
     }
 };
