@@ -1,5 +1,5 @@
 # Game Of Drones
-###### Test App for UruIT
+###### Test for UruIT
 
 ## Info
 This solution contains four projects
